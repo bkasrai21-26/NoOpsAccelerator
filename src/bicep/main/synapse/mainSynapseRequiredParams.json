@@ -1,0 +1,78 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"p_loginName": {
+			"value": "<email-id>"
+		},
+		"p_startIpAddress": {
+			"value": "<ip-adress>"
+		},
+		"p_endIpAddress": {
+			"value": "<ip-address>"
+		},
+		"p_sourceAddressPrefix": {
+			"value" : "ip-address-or-range"
+		},
+		"p_vulnerabilityScanEmails": { 
+			"value": ["<email-ids>"]
+		},
+		"p_alertEmails": {
+			"value":  ["<email-ids>"]
+		},
+		"p_azureSynapseEnv": {
+			"value": "azuresynapse.net"
+		},
+		"p_objectId": {
+			"value": "<object-id-of-user>"
+		},
+		"c_createSparkPool": {
+			"value": true
+		},
+		"c_createSQLPool": {
+			"value": true
+		},
+		"c_allowAzureServices": {
+			"value": true
+		},
+		"c_createDatalakeZones": {
+			"value": true
+		},
+		"c_privatelinkhub": {
+			"value": true
+		},
+		"c_privateSynapseEndpoint": {
+			"value": true
+		},
+		"c_createKeyVaultprivateEndpoint": {
+			"value": true
+		},
+		"c_enableWorkspaceAlertPolicy": {
+			"value": true
+		},
+		"c_enableWorkspaceVulnerabiltyScan": {
+			"value": true
+		},
+		"c_enableWorkspaceAuditSettings": {
+			"value": true
+		},
+		"c_enableSQLPoolAlertPolicy": {
+			"value": true
+		},
+		"c_enableSQLPoolVulnerabiltyScan": {
+			"value": true
+		},
+		"c_enableSQLPoolAuditSettings": {
+			"value": true
+		},
+		"c_enableSQLPoolTDE": {
+			"value": false
+		},
+		"c_useBlobPrivateDNSzoneInNetworkHub": {
+			"value": false
+		},
+		"c_createWindowsJumpHost": {
+			"value": true
+		}
+	}
+}

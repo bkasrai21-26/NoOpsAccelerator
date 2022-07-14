@@ -1,0 +1,5 @@
+cd <path to src>/src/bicep/
+
+az deployment sub  create --name deployrg  --template-file .\main\resourcegroup\mainResourceGroup.bicep  --parameters '@globalParameters\globals.json'
+
+az deployment group create --name deploysa --resource-group shnawa33-rg --template-file .\main\adls\mainStorageAccountHNS.bicep --parameters '@globalParameters\globals.json' 

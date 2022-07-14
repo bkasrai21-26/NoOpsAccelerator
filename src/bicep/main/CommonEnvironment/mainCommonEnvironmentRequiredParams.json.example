@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"p_location": {
+			"value": "eastus"
+		},
+		"p_sourceAddressPrefix": {
+			"value": "167.220.148.119"
+		},
+		"p_vnetAddressSpace": {
+			"value": "10.0.0.0/24"
+		},
+		"p_objectId": {
+			"value": "b675e3ee-fa3c-4208-abf2-18bfaad93c9a"
+		},
+     	"c_createLogAnalytics": {
+			"value": true
+		}
+	}
+}

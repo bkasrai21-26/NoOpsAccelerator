@@ -1,0 +1,37 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"p_objectId": {
+			"value": "User Azure Object Id"
+		},
+		"p_vulnerabilityScanEmails": { 
+			"value": ["user email address"]
+		},
+		"p_alertEmails": {
+			"value":  ["user email address"]
+		},
+		"c_privateEndpoint": {
+			"value": true
+		},
+		"c_enableSqlServerVulnerabiltyScan": {
+			"value": true
+		},
+		"c_enableSqlDBVulnerabiltyScan": {
+			"value": true
+		},
+		"c_enableSqlserverAlertPolicy": {
+			"value": true
+		},
+		"c_enableSqlDBAlertPolicy": {
+			"value": true
+		},
+		"c_enableSqlDBTDE": {
+			"value": true
+		},
+		"c_existingNSGandRouting": {
+			"value": false
+		}
+	}
+}
+

@@ -1,0 +1,10 @@
+{
+    "name": "dfs_ls",
+    "properties": {
+        "annotations": [],
+        "type": "AzureBlobFS",
+        "typeProperties": {
+            "url": "$storageAccountBaseUrl"
+        }
+    }
+}

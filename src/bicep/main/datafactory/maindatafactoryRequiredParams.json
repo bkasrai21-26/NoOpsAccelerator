@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"p_objectId": {
+			"value": "<object-id-of-user>"
+		},
+		"p_sourceAddressPrefix" : {
+			"value": "<Source IP or range>"
+		},
+		"c_enableCMK": {
+			"value": true
+		},
+		"c_enablePrivateEndpoint": {
+			"value": true
+		},
+		"c_createWindowsJumpHost": {
+			"value": true
+		}
+	}
+}

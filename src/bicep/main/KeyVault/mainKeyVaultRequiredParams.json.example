@@ -1,0 +1,13 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"p_ipAddress": {
+			"value": "71.163.18.172"
+		},
+		"c_publicNetworkAccess": {
+			"value": "Disabled"
+		}
+	}
+}
+

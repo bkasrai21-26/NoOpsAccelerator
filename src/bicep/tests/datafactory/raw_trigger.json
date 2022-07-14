@@ -1,0 +1,25 @@
+{
+    "name": "raw_trigger",
+    "properties": {
+        "annotations": [],
+        "runtimeState": "Stopped",
+        "pipelines": [
+            {
+                "pipelineReference": {
+                    "referenceName": "copy_pipeline",
+                    "type": "PipelineReference"
+                }
+            }
+        ],
+        "type": "BlobEventsTrigger",
+        "typeProperties": {
+            "blobPathBeginsWith": "/raw/blobs/",
+            "blobPathEndsWith": ".json",
+            "ignoreEmptyBlobs": true,
+            "scope": "$storageAccountResourceId",
+            "events": [
+                "Microsoft.Storage.BlobCreated"
+            ]
+        }
+    }
+}

@@ -1,0 +1,43 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"p_objectId": {
+			"value": "<your obj id>"
+		},
+		"p_vulnerabilityScanEmails": { 
+			"value": ["<your email>"]
+		},
+		"p_alertEmails": {
+			"value":  ["<your email>"]
+		},
+		"c_enableCMK": {
+			"value": false
+		},
+		"c_privateEndpoint": {
+			"value": true
+		},
+		"c_enableSqlServerAuditSettings": {
+			"value": true
+		},
+		"c_enableSqlDBAuditSettings": {
+			"value": true
+		},
+		"c_enableSqlServerVulnerabiltyScan": {
+			"value": true
+		},
+		"c_enableSqlDBVulnerabiltyScan": {
+			"value": true
+		},
+		"c_enableSqlserverAlertPolicy": {
+			"value": true
+		},
+		"c_enableSqlDBAlertPolicy": {
+			"value": true
+		},
+		"c_enableSqlDBTDE": {
+			"value": true
+		}
+	}
+}
+

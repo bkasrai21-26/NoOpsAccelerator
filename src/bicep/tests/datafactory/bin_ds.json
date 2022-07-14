@@ -1,0 +1,25 @@
+{
+    "name": "bin_ds",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "dfs_ls",
+            "type": "LinkedServiceReference"
+        },
+        "parameters": {
+            "containerName": {
+                "type": "string"
+            }
+        },
+        "annotations": [],
+        "type": "Binary",
+        "typeProperties": {
+            "location": {
+                "type": "AzureBlobFSLocation",
+                "fileSystem": {
+                    "value": "@dataset().containerName",
+                    "type": "Expression"
+                }
+            }
+        }
+    }
+}

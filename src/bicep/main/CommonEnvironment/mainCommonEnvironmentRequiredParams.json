@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"p_location": {
+			"value": "<location>"
+		},
+		"p_sourceAddressPrefix": {
+			"value": "<ip-address>"
+		},
+		"p_vnetAddressSpace": {
+			"value": "<address-space>"
+		},
+		"p_objectId": {
+			"value": "<object-id-of-user>"
+		},
+		"c_createLogAnalytics": {
+			"value": true
+		}
+	}
+}
