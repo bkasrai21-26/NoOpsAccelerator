@@ -1,0 +1,118 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2021-2022 Microsoft Corporation. All rights reserved. This
+// Software is licensed under the MIT License. See LICENSE in the project root
+// for license information.
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Description : This main purview file  creates Microsoft Purview Account. 
+// By default all synpase options/features  are enabled. This can be changed by modifying mainSynapseControls.json
+//
+// Dependency  
+//   1. ../KeyVault/mainKeyVault.bicep (Optional if key vault already exists. In such case provide the name of key vault)
+//   2. ../CommonEnvironment/mainCommonEnvironment.bicep 
+//
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+targetScope = 'subscription'
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+// Section-I : Controls Purview features
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@description('Enable to create private end points')
+param c_privatePurviewEndpoint bool
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+// Section-II: Parameters passed from mainPurviewRequiredParams.json
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@description('Specify public network access.')
+param p_publicNetworkAccess string
+
+@description('Specify identity type.')
+param p_identityType string
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+// Section-III : Subscription Id's
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@description('Subscription Id in which Purview workspace will be created')
+param p_purviewSubscription string = subscription().subscriptionId
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+// Section-IV: Resource Group Names
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@description('Deriving Purview resource name from identifier')
+param p_purviewResourceGroupName  string = 'rg-${p_nameIdentifier}-purview'
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+// Section-V : Resource Location
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@description('Location of Purview workspace')
+param p_purviewResourceGroupLocation string
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+// Section-VI: Declare remaining parameters here if needed
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@description('consistant unique identifer across all resources parameters. Default behaviour is to pass value from command line ')
+param p_nameIdentifier string 
+
+@description('UTC timestamp used for deployment and other purposes')
+param p_utcNow string = utcNow()
+
+param p_tags object = {
+  Application: 'Not-Defined'
+  CostCenter: 'Not-Defined'
+  CreationDate: 'dateTime'
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+// Section-VII: Variables 
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var purviewAccountName = '${p_nameIdentifier}-purview'
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+// Section-VIII: Modules 
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//
+// Retreiving existing common environment Infrastructure
+//
+
+
+
+// Implementing Purview infrastructure
+module purviewResourceGroup '../../modules/resourcegroup/resourceGroup.bicep' = {
+  name: take('deployPurviewRG-${p_nameIdentifier}-${p_utcNow}', 64)
+  scope: subscription(p_purviewSubscription)
+  params: {
+     p_name: p_purviewResourceGroupName
+     p_location: p_purviewResourceGroupLocation
+     p_tags: p_tags
+  }
+  dependsOn: [
+  ]
+}
+
+// Implementing Purview infrastructure
+module purviewAccount '../../modules/purview/account/purviewAccount.bicep' = {
+  name: purviewAccountName
+  scope: resourceGroup(p_purviewResourceGroupName)
+  params: {
+     p_nameIdentifier: p_nameIdentifier
+     p_location: p_purviewResourceGroupLocation
+     p_publicNetworkAccess: p_publicNetworkAccess
+     p_identityType: p_identityType
+  }
+  dependsOn: [
+    purviewResourceGroup
+  ]
+}
+
+
