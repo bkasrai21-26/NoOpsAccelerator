@@ -2,7 +2,7 @@
 
 The Mission Data Fabric accelerator is an opinionated design and implementation of the industry data mesh concepts applied specifically to the Department of the Defense use cases.  It recognizes the unique circumstances and challenges that DoD experiences and provides an accelerated solution for rapid deployment with options and flexibilty for customization. The design includes the enterprise data hub, which provides data mesh services for data providers and consumers, and the data domains where data ingestion, exploration, analytics, and management services required to produce data products is hosted. 
 
-# About Our Customer - Department of Defense
+# Department of Defense Data Environment characteristics
 
 DoD's current data environment is exceedingly complex and has challenging characteristics as outlined below.  
 - Current system and network centric approach makes data sharing complex.  
@@ -14,6 +14,10 @@ DoD's current data environment is exceedingly complex and has challenging charac
 - Employing multiple data fabric solutions (multi-vendor, multi-cloud) adds complexity
 
 The DoD Data Strategy supports the National Defense Strategy and Digital Modernization by providing the overarching vision, focus areas, guiding principles, essential capabilities, and goals necessary to transform the Department into a data-centric enterprise. Success cannot be taken for granted.  It is the responsibility of all DoD leaders to treat data as a weapon system and manage, secure, and use data for operational effect. 
+
+# Department of Defense Data Strategy
+The full DoD strategy document can be downloaded from the URL below.  
+https://media.defense.gov/2020/Oct/08/2002514180/-1/-1/0/DOD-DATA-STRATEGY.PDF
 
 ## Vision 
 DoD is a data-centric organization that uses data at speed and scale for operational advantage and increased efficiency.
