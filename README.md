@@ -1,10 +1,35 @@
-# What is the Mission Data Fabric Accelerator?
+# What is the Mission Data Fabric (MDF) Accelerator?
 
 The Mission Data Fabric accelerator is an opinionated design and implementation of the industry data mesh concepts applied specifically to the Department of the Defense use cases.  It recognizes the unique circumstances and challenges that DoD experiences and provides an accelerated solution for rapid deployment with options and flexibilty for customization. The design includes the enterprise data hub, which provides data mesh services for data providers and consumers, and the data domains where data ingestion, exploration, analytics, and management services required to produce data products is hosted. 
 
-Mission Data Fabric Accelerator
 
 ![image](https://user-images.githubusercontent.com/11035709/212981622-4d1dba72-5157-4db5-a620-05451e6db376.png)
+
+## Supported Clouds
+
+Mission Data Fabric Accelerator can be deployed in the Azure Government and Commercial clouds.  Deployment is currently being tested for Azure Secret and Top Secret clouds.  The goal is for the MDF accelerator to be fully deployable and functional in all US sovereign and air-gapped clouds.
+
+## Common Infrastructure
+
+The Common Infrastructure layer represents the networking and infrastrucure for the mission data fabric foundation.  It builds on the Mission Landing Zones, which is a highly opinionated Infrastructure-as-Code (IaC) deployment with which the IT oversight organizations can use to create a cloud management system to deploy Azure environments for their workloads and teams.
+
+Mission Landing Zone addresses a narrowly scoped, specific need for a Secure Cloud Computing Architecture (SCCA) compliant hub and spoke infrastructure.  
+
+- Designed for US Government mission customers
+- Implements SCCA controls following Microsoft's SACA implementation guidance
+- Deployable in Azure commercial, Azure Government, Azure Government Secret, and Azure Government Top Secret clouds
+- A simple solution with low configuration and narrow scope
+- Written as Bicep and Terraform templates
+
+For more details about the Mission Landing Zones, please refer to https://github.com/Azure/missionlz
+
+## Common Data Fabric
+
+The common data fabric represents the pretrained models, data ingestion pipelines, analytics artifacts and libraries, and machine learning artifacts and models that can be shared within a single functional domain of the data mesh.  It can be a DoD centric item such as a data ingestion pipeline built to read sensor data from a specific weapon system.  It can also be a technology specific item such as a data ingestion pipeline that can ingest Sharepoint Online files.  
+
+## Information Domains and Custom Models
+
+The custom models are currently available for the Intelligence, Cybersecurity, and Space information domains.  Each of the information domains aligns directly to the DoD information domain, which are defined and outlined in the DoD Data Strategy document.  The custom models for each of the information domains are 
 
 # Department of Defense Data Environment characteristics
 
