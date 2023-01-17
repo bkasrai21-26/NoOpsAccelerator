@@ -2,8 +2,18 @@
 
 The Mission Data Fabric accelerator is an opinionated design and implementation of the industry data mesh concepts applied specifically to the Department of the Defense use cases.  It recognizes the unique circumstances and challenges that DoD experiences and provides an accelerated solution for rapid deployment with options and flexibilty for customization. The design includes the enterprise data hub, which provides data mesh services for data providers and consumers, and the data domains where data ingestion, exploration, analytics, and management services required to produce data products is hosted. 
 
-# About Our Customer - Depeartment of Defense
-The DoD Data Strategy supports the National Defense Strategy and Digital Modernization by providing the overarching vision, focus areas, guiding principles, essential capabilities, and goals necessary to transform the Department into a data-centric enterprise. Success cannot be taken for granted…it is the responsibility of all DoD leaders to treat data as a weapon system and manage, secure, and use data for operational effect. 
+# About Our Customer - Department of Defense
+
+DoD's current data environment is exceedingly complex and has challenging characteristics as outlined below.  
+- Current system and network centric approach makes data sharing complex.  
+- Excessive data duplication and retention are reducing the data quality and authority, making it difficult for data consumers to find and consume data with high confidence. 
+- Data is trapped by proprietary software and multiple function specific message protocols, making it difficult for data ingestion pipelines to be shared broadly.
+- Data resides on separate networks at different classification levels
+- Different organizations need common data to perform different functions
+- Common enterprise services are not in place to share data efficiently and securely
+- Employing multiple data fabric solutions (multi-vendor, multi-cloud) adds complexity
+
+The DoD Data Strategy supports the National Defense Strategy and Digital Modernization by providing the overarching vision, focus areas, guiding principles, essential capabilities, and goals necessary to transform the Department into a data-centric enterprise. Success cannot be taken for granted.  It is the responsibility of all DoD leaders to treat data as a weapon system and manage, secure, and use data for operational effect. 
 
 ## Vision 
 DoD is a data-centric organization that uses data at speed and scale for operational advantage and increased efficiency.
