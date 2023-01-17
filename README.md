@@ -2,6 +2,10 @@
 
 The Mission Data Fabric accelerator is an opinionated design and implementation of the industry data mesh concepts applied specifically to the Department of the Defense use cases.  It recognizes the unique circumstances and challenges that DoD experiences and provides an accelerated solution for rapid deployment with options and flexibilty for customization. The design includes the enterprise data hub, which provides data mesh services for data providers and consumers, and the data domains where data ingestion, exploration, analytics, and management services required to produce data products is hosted. 
 
+Mission Data Fabric Accelerator
+
+![image](https://user-images.githubusercontent.com/11035709/212981622-4d1dba72-5157-4db5-a620-05451e6db376.png)
+
 # Department of Defense Data Environment characteristics
 
 DoD's current data environment is exceedingly complex and has challenging characteristics as outlined below.  
