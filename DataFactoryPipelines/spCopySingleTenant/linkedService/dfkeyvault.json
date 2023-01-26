@@ -1,0 +1,11 @@
+{
+    "name": "dfkeyvault",
+    "type": "Microsoft.DataFactory/factories/linkedservices",
+    "properties": {
+        "annotations": [],
+        "type": "AzureKeyVault",
+        "typeProperties": {
+            "baseUrl": "https://df-sp-keyvault.vault.azure.net/"
+        }
+    }
+}

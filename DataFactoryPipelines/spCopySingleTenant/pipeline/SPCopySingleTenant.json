@@ -1,0 +1,715 @@
+{
+    "name": "SPCopySingleTenant",
+    "properties": {
+        "activities": [
+            {
+                "name": "Get Request Header",
+                "type": "WebActivity",
+                "dependsOn": [
+                    {
+                        "activity": "aadAuthEndpoint",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "url": {
+                        "value": "@variables('aadAuthEndpoint')",
+                        "type": "Expression"
+                    },
+                    "connectVia": {
+                        "referenceName": "AutoResolveIntegrationRuntime",
+                        "type": "IntegrationRuntimeReference"
+                    },
+                    "method": "POST",
+                    "headers": {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    "body": {
+                        "value": "@concat(concat('grant_type=client_credentials&client_id=', pipeline().parameters.clientId, '&client_secret='), pipeline().parameters.clientSecret, '&scope=https://graph.microsoft.com/.default')",
+                        "type": "Expression"
+                    },
+                    "authentication": {
+                        "type": "ServicePrincipal",
+                        "userTenant": {
+                            "value": "@pipeline().parameters.spTenantId",
+                            "type": "Expression"
+                        },
+                        "username": {
+                            "value": "@pipeline().parameters.clientId",
+                            "type": "Expression"
+                        },
+                        "resource": "https://graph.microsoft.com/",
+                        "password": {
+                            "type": "AzureKeyVaultSecret",
+                            "store": {
+                                "referenceName": "dfkeyvault",
+                                "type": "LinkedServiceReference"
+                            },
+                            "secretName": "sharepoint-sp-secret"
+                        }
+                    }
+                }
+            },
+            {
+                "name": "Get Sharepoint Site ID",
+                "type": "WebActivity",
+                "dependsOn": [
+                    {
+                        "activity": "Get Request Header",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "url": {
+                        "value": "@concat(concat(concat(variables('graphApiEndpoint'), 'sites/', pipeline().parameters.spTenantName), '.sharepoint.com:/sites/', pipeline().parameters.spDriveName), '?`$select=id')",
+                        "type": "Expression"
+                    },
+                    "connectVia": {
+                        "referenceName": "AutoResolveIntegrationRuntime",
+                        "type": "IntegrationRuntimeReference"
+                    },
+                    "method": "GET",
+                    "headers": {
+                        "Authorization": {
+                            "value": "@activity('Get Request Header').output.access_token",
+                            "type": "Expression"
+                        },
+                        "Content-Type": "applications/json"
+                    }
+                }
+            },
+            {
+                "name": "Get Drivelist for Sharepoint Site",
+                "type": "WebActivity",
+                "dependsOn": [
+                    {
+                        "activity": "spGetDriveUrl",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "url": {
+                        "value": "@variables('spGetDriveUrl')",
+                        "type": "Expression"
+                    },
+                    "connectVia": {
+                        "referenceName": "AutoResolveIntegrationRuntime",
+                        "type": "IntegrationRuntimeReference"
+                    },
+                    "method": "GET",
+                    "headers": {
+                        "Authorization": {
+                            "value": "@activity('Get Request Header').output.access_token",
+                            "type": "Expression"
+                        },
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            {
+                "name": "spSiteId",
+                "type": "SetVariable",
+                "dependsOn": [
+                    {
+                        "activity": "Get Sharepoint Site ID",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "variableName": "spSiteId",
+                    "value": {
+                        "value": "@substring(activity('Get Sharepoint Site ID').output.id, add(indexOf(activity('Get Sharepoint Site ID').output.id, ','), 1),36)",
+                        "type": "Expression"
+                    }
+                }
+            },
+            {
+                "name": "spGetDriveUrl",
+                "type": "SetVariable",
+                "dependsOn": [
+                    {
+                        "activity": "spSiteId",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "variableName": "spGetDriveUrl",
+                    "value": {
+                        "value": "@concat(concat(variables('graphApiEndpoint'), 'sites/', variables('spSiteId')), '/drives?`$select=name,id')",
+                        "type": "Expression"
+                    }
+                }
+            },
+            {
+                "name": "Iterate Sharepoint Drives",
+                "type": "ForEach",
+                "dependsOn": [
+                    {
+                        "activity": "Get Drivelist for Sharepoint Site",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "items": {
+                        "value": "@activity('Get Drivelist for Sharepoint Site').output.value",
+                        "type": "Expression"
+                    },
+                    "activities": [
+                        {
+                            "name": "If Condition1",
+                            "type": "IfCondition",
+                            "dependsOn": [],
+                            "userProperties": [],
+                            "typeProperties": {
+                                "expression": {
+                                    "value": "@equals(item().name, 'Documents')",
+                                    "type": "Expression"
+                                },
+                                "ifTrueActivities": [
+                                    {
+                                        "name": "spDriveId",
+                                        "type": "SetVariable",
+                                        "dependsOn": [],
+                                        "userProperties": [],
+                                        "typeProperties": {
+                                            "variableName": "spDriveId",
+                                            "value": {
+                                                "value": "@item().id",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "spDriveUrl",
+                "type": "SetVariable",
+                "dependsOn": [
+                    {
+                        "activity": "Iterate Sharepoint Drives",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "variableName": "spDriveUrl",
+                    "value": {
+                        "value": "@concat(concat(concat(variables('graphApiEndpoint'), 'sites/', variables('spSiteId')), '/drives/', variables('spDriveId')), '/root/children?`$Top=1000')",
+                        "type": "Expression"
+                    }
+                }
+            },
+            {
+                "name": "Get Files from Document Root",
+                "type": "WebActivity",
+                "dependsOn": [
+                    {
+                        "activity": "spDriveUrl",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "url": {
+                        "value": "@variables('spDriveUrl')",
+                        "type": "Expression"
+                    },
+                    "connectVia": {
+                        "referenceName": "AutoResolveIntegrationRuntime",
+                        "type": "IntegrationRuntimeReference"
+                    },
+                    "method": "GET",
+                    "headers": {
+                        "Authorization": {
+                            "value": "@activity('Get Request Header').output.access_token",
+                            "type": "Expression"
+                        },
+                        "Content-Type": "application/json"
+                    }
+                }
+            },
+            {
+                "name": "Iterate Files",
+                "type": "ForEach",
+                "dependsOn": [
+                    {
+                        "activity": "Get Files from Document Root",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "Get Request Header For Storage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "items": {
+                        "value": "@activity('Get Files from Document Root').output.value",
+                        "type": "Expression"
+                    },
+                    "activities": [
+                        {
+                            "name": "If File Exists",
+                            "type": "IfCondition",
+                            "dependsOn": [],
+                            "userProperties": [],
+                            "typeProperties": {
+                                "expression": {
+                                    "value": "@contains(item(), 'file')",
+                                    "type": "Expression"
+                                },
+                                "ifTrueActivities": [
+                                    {
+                                        "name": "Download File",
+                                        "type": "WebActivity",
+                                        "dependsOn": [
+                                            {
+                                                "activity": "downloadUrl",
+                                                "dependencyConditions": [
+                                                    "Succeeded"
+                                                ]
+                                            }
+                                        ],
+                                        "policy": {
+                                            "timeout": "0.12:00:00",
+                                            "retry": 0,
+                                            "retryIntervalInSeconds": 30,
+                                            "secureOutput": false,
+                                            "secureInput": false
+                                        },
+                                        "userProperties": [],
+                                        "typeProperties": {
+                                            "url": {
+                                                "value": "@variables('downloadUrl')",
+                                                "type": "Expression"
+                                            },
+                                            "connectVia": {
+                                                "referenceName": "AutoResolveIntegrationRuntime",
+                                                "type": "IntegrationRuntimeReference"
+                                            },
+                                            "method": "GET"
+                                        }
+                                    },
+                                    {
+                                        "name": "downloadUrl",
+                                        "type": "SetVariable",
+                                        "dependsOn": [],
+                                        "userProperties": [],
+                                        "typeProperties": {
+                                            "variableName": "downloadUrl",
+                                            "value": {
+                                                "value": "@item()['@microsoft.graph.downloadUrl']",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "Create File",
+                                        "type": "WebActivity",
+                                        "dependsOn": [
+                                            {
+                                                "activity": "Download File",
+                                                "dependencyConditions": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            {
+                                                "activity": "uploadUrl",
+                                                "dependencyConditions": [
+                                                    "Succeeded"
+                                                ]
+                                            }
+                                        ],
+                                        "policy": {
+                                            "timeout": "0.12:00:00",
+                                            "retry": 0,
+                                            "retryIntervalInSeconds": 30,
+                                            "secureOutput": false,
+                                            "secureInput": false
+                                        },
+                                        "userProperties": [],
+                                        "typeProperties": {
+                                            "url": {
+                                                "value": "@concat(variables('uploadUrl'), variables('filename'), '?resource=file')",
+                                                "type": "Expression"
+                                            },
+                                            "connectVia": {
+                                                "referenceName": "AutoResolveIntegrationRuntime",
+                                                "type": "IntegrationRuntimeReference"
+                                            },
+                                            "method": "PUT",
+                                            "headers": {
+                                                "Authorization": {
+                                                    "value": "@concat('Bearer ', activity('Get Request Header For Storage').output.access_token)",
+                                                    "type": "Expression"
+                                                },
+                                                "Content-Length": "0"
+                                            },
+                                            "body": {
+                                                "value": "@concat('', '')",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "filename",
+                                        "type": "SetVariable",
+                                        "dependsOn": [],
+                                        "userProperties": [],
+                                        "typeProperties": {
+                                            "variableName": "filename",
+                                            "value": {
+                                                "value": "@item().name",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "uploadUrl",
+                                        "type": "SetVariable",
+                                        "dependsOn": [
+                                            {
+                                                "activity": "filename",
+                                                "dependencyConditions": [
+                                                    "Succeeded"
+                                                ]
+                                            }
+                                        ],
+                                        "userProperties": [],
+                                        "typeProperties": {
+                                            "variableName": "uploadUrl",
+                                            "value": {
+                                                "value": "@concat(concat('https://', pipeline().parameters.adlsAccountName, '.dfs.core.windows.net/'), pipeline().parameters.fileSystem, '/')",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "Append File",
+                                        "type": "WebActivity",
+                                        "dependsOn": [
+                                            {
+                                                "activity": "Create File",
+                                                "dependencyConditions": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            {
+                                                "activity": "position",
+                                                "dependencyConditions": [
+                                                    "Succeeded"
+                                                ]
+                                            }
+                                        ],
+                                        "policy": {
+                                            "timeout": "0.12:00:00",
+                                            "retry": 0,
+                                            "retryIntervalInSeconds": 30,
+                                            "secureOutput": false,
+                                            "secureInput": false
+                                        },
+                                        "userProperties": [],
+                                        "typeProperties": {
+                                            "url": {
+                                                "value": "@concat(variables('uploadUrl'), variables('filename'), '?action=append&position=0')",
+                                                "type": "Expression"
+                                            },
+                                            "connectVia": {
+                                                "referenceName": "AutoResolveIntegrationRuntime",
+                                                "type": "IntegrationRuntimeReference"
+                                            },
+                                            "method": "PATCH",
+                                            "headers": {
+                                                "Authorization": {
+                                                    "value": "@concat('Bearer ', activity('Get Request Header For Storage').output.access_token)",
+                                                    "type": "Expression"
+                                                },
+                                                "Content-Length": {
+                                                    "value": "@variables('position')",
+                                                    "type": "Expression"
+                                                },
+                                                "x-ms-date": {
+                                                    "value": "@utcNow()",
+                                                    "type": "Expression"
+                                                },
+                                                "x-ms-version": "2021-08-06"
+                                            },
+                                            "body": {
+                                                "value": "@activity('Download File').output.response",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "Flush Content",
+                                        "type": "WebActivity",
+                                        "dependsOn": [
+                                            {
+                                                "activity": "Append File",
+                                                "dependencyConditions": [
+                                                    "Succeeded"
+                                                ]
+                                            }
+                                        ],
+                                        "policy": {
+                                            "timeout": "0.12:00:00",
+                                            "retry": 0,
+                                            "retryIntervalInSeconds": 30,
+                                            "secureOutput": false,
+                                            "secureInput": false
+                                        },
+                                        "userProperties": [],
+                                        "typeProperties": {
+                                            "url": {
+                                                "value": "@concat(concat(variables('uploadUrl'), variables('filename'), '?action=flush&position='), variables('position'))",
+                                                "type": "Expression"
+                                            },
+                                            "connectVia": {
+                                                "referenceName": "AutoResolveIntegrationRuntime",
+                                                "type": "IntegrationRuntimeReference"
+                                            },
+                                            "method": "PATCH",
+                                            "headers": {
+                                                "Authorization": {
+                                                    "value": "@concat('Bearer ', activity('Get Request Header For Storage').output.access_token)",
+                                                    "type": "Expression"
+                                                },
+                                                "x-ms-date": {
+                                                    "value": "@utcNow()",
+                                                    "type": "Expression"
+                                                },
+                                                "x-ms-version": "2021-08-06",
+                                                "content-length": {
+                                                    "value": "@variables('position')",
+                                                    "type": "Expression"
+                                                }
+                                            },
+                                            "body": ""
+                                        }
+                                    },
+                                    {
+                                        "name": "position",
+                                        "type": "SetVariable",
+                                        "dependsOn": [
+                                            {
+                                                "activity": "Download File",
+                                                "dependencyConditions": [
+                                                    "Succeeded"
+                                                ]
+                                            }
+                                        ],
+                                        "userProperties": [],
+                                        "typeProperties": {
+                                            "variableName": "position",
+                                            "value": {
+                                                "value": "@activity('Download File').output.ADFWebActivityResponseHeaders['content-length']",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "Get Request Header For Storage",
+                "type": "WebActivity",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "url": {
+                        "value": "@variables('aadAuthEndpoint')",
+                        "type": "Expression"
+                    },
+                    "connectVia": {
+                        "referenceName": "AutoResolveIntegrationRuntime",
+                        "type": "IntegrationRuntimeReference"
+                    },
+                    "method": "POST",
+                    "headers": {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    "body": {
+                        "value": "@concat(concat('grant_type=client_credentials&client_id=', pipeline().parameters.clientId, '&client_secret='), pipeline().parameters.clientSecret, '&scope=https://storage.azure.com/.default')",
+                        "type": "Expression"
+                    },
+                    "authentication": {
+                        "type": "ServicePrincipal",
+                        "userTenant": {
+                            "value": "@pipeline().parameters.spTenantId",
+                            "type": "Expression"
+                        },
+                        "username": {
+                            "value": "@pipeline().parameters.clientId",
+                            "type": "Expression"
+                        },
+                        "resource": "https://storage.azure.com",
+                        "password": {
+                            "type": "AzureKeyVaultSecret",
+                            "store": {
+                                "referenceName": "dfkeyvault",
+                                "type": "LinkedServiceReference"
+                            },
+                            "secretName": "sharepoint-sp-secret"
+                        }
+                    }
+                }
+            },
+            {
+                "name": "aadAuthEndpoint",
+                "type": "SetVariable",
+                "dependsOn": [],
+                "userProperties": [],
+                "typeProperties": {
+                    "variableName": "aadAuthEndpoint",
+                    "value": "@concat('https://login.microsoftonline.com/', pipeline().parameters.spTenantId, '/oauth2/v2.0/token')"
+                }
+            },
+            {
+                "name": "graphApiEndpoint",
+                "type": "SetVariable",
+                "dependsOn": [],
+                "userProperties": [],
+                "typeProperties": {
+                    "variableName": "graphApiEndpoint",
+                    "value": "https://graph.microsoft.com/v1.0/"
+                }
+            }
+        ],
+        "parameters": {
+            "clientId": {
+                "type": "string",
+                "defaultValue": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+            },
+            "clientSecret": {
+                "type": "string",
+                "defaultValue": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "spTenantId": {
+                "type": "string",
+                "defaultValue": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+            },
+            "spTenantName": {
+                "type": "string",
+                "defaultValue": "contoso"
+            },
+            "spDriveName": {
+                "type": "string",
+                "defaultValue": "SharepointDriveName"
+            },
+            "adlsAccountName": {
+                "type": "string",
+                "defaultValue": "StorageAccountName"
+            },
+            "fileSystem": {
+                "type": "string",
+                "defaultValue": "ADLSFileSystemName"
+            }
+        },
+        "variables": {
+            "spSiteId": {
+                "type": "String"
+            },
+            "spGetDriveUrl": {
+                "type": "String"
+            },
+            "spDriveId": {
+                "type": "String"
+            },
+            "spDriveUrl": {
+                "type": "String"
+            },
+            "downloadUrl": {
+                "type": "String"
+            },
+            "filename": {
+                "type": "String"
+            },
+            "uploadUrl": {
+                "type": "String"
+            },
+            "position": {
+                "type": "String"
+            },
+            "aadAuthEndpoint": {
+                "type": "String"
+            },
+            "graphApiEndpoint": {
+                "type": "String"
+            }
+        },
+        "folder": {
+            "name": "Common Pipelines"
+        },
+        "annotations": [],
+        "lastPublishTime": "2023-01-25T12:30:47Z"
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}
