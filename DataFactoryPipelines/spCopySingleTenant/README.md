@@ -25,12 +25,12 @@ This ADF pipeline copies Sharepoint Online files to Azure Data Lake residing in 
 ### 3. In the "Get Request Header" and "Get Request Header for Storage Account" web activity, change the service princpal secret to use the Azure key vault configured in step 2. 
 ### 4. Input Pipeline Parameters
 
-clientId - service pricipal id
-clientSecret - service principal secret
-spTenantId - AAD tenant id
-spTenantName - AAD tenant name (ex. contoso.onmicrosoft.com, contoso is the tenant name)
-spDriveName - Sharepoint drive name (ex. Documents)
-adlsAccountName - Azure data lake account name
-fileSystem - ADLS filesystem name
+- clientId - service pricipal id
+- clientSecret - service principal secret
+- spTenantId - AAD tenant id
+- spTenantName - AAD tenant name (ex. contoso.onmicrosoft.com, contoso is the tenant name)
+- spDriveName - Sharepoint drive name (ex. Documents)
+- adlsAccountName - Azure data lake account name
+- fileSystem - ADLS filesystem name
 
 
