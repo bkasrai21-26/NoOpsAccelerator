@@ -21,6 +21,9 @@ https://login.microsoftonline.com/{tenant-id}/adminconsent?client_id={client-id}
 ## How To Deploy
 
 ### 1. Import the Pipeline Definition into your ADF workspace.
+
+Download the SPCopyMultiTenant.json and manifest.json files into a directory SPCopyMultiTenant.  Alternatively, you can use the git sparse-checkout command to checkout just the SPCopyMultiTenant folder.  Zip the directory and use the ADF pipeline import feature from the ADF designer to import the pipeline.  
+
 ### 2. Create a linked service to Azure Key Vault instance.
 
 Ensure that the ADF system assigned identity has "Key Vault Reader" permission for the client secret.  Web Activity uses this permission to retrieve the client secret.  
